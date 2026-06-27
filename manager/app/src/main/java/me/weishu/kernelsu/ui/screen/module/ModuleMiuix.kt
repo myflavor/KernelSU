@@ -230,8 +230,10 @@ fun ModulePagerMiuix(
 
             is ModuleEffect.SnackBar -> {
                 // Cancel the previous reboot snackbar so a new one replaces it instead of queueing
-                snackbarJob.value?.cancel()
+                val previousJob = snackbarJob.value
                 snackbarJob.value = scope.launch {
+                    previousJob?.cancelAndJoin()
+                    snackbarHostState.currentSnackbarData?.dismiss()
                     val result = snackbarHostState.showSnackbar(
                         message = event.message,
                         actionLabel = context.getString(R.string.reboot),
